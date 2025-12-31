@@ -1,5 +1,5 @@
 [phases.build]
-cmds = ["npm install", "chmod -R +x node_modules/.bin", "npm run build"]
+cmds = ["npm install", "find node_modules -type f -name '*.node' -o -name 'esbuild' | xargs chmod +x 2>/dev/null || true", "chmod -R +x node_modules/.bin node_modules/@esbuild 2>/dev/null || true", "npm run build"]
 
 [phases.setup]
 nixPkgs = ["nodejs_20", "nginx"]
