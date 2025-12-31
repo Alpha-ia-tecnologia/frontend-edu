@@ -1,11 +1,11 @@
 [phases.setup]
-nixPkgs = ["nodejs_18", "caddy"]
+nixPkgs = ["nodejs_18"]
 
 [phases.install]
 cmds = ["npm ci"]
 
 [phases.build]
-cmds = ["npm run build", "cp Caddyfile /tmp/Caddyfile"]
+cmds = ["npm run build"]
 
 [staticAssets]
 directory = "dist"
