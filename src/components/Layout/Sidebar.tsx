@@ -1,7 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
-    LayoutDashboard,
     BookOpen,
     Users,
     Library,
@@ -20,7 +19,6 @@ interface NavItem {
 }
 
 const adminNav: NavItem[] = [
-    { path: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
     { path: '/admin/books', label: 'Gerenciar Livros', icon: <BookOpen size={20} /> },
     { path: '/admin/users', label: 'Gerenciar Usuários', icon: <Users size={20} /> },
     { path: '/admin/curriculum', label: 'Componentes Curriculares', icon: <Layers size={20} /> },
@@ -29,13 +27,11 @@ const adminNav: NavItem[] = [
 ];
 
 const professorNav: NavItem[] = [
-    { path: '/professor', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
     { path: '/professor/my-books', label: 'Meus Livros', icon: <BookMarked size={20} /> },
     { path: '/professor/students', label: 'Meus Alunos', icon: <GraduationCap size={20} /> },
 ];
 
 const studentNav: NavItem[] = [
-    { path: '/student', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
     { path: '/student/library', label: 'Minha Biblioteca', icon: <Library size={20} /> },
 ];
 

@@ -16,12 +16,11 @@ import ManageCurriculum from './pages/Admin/ManageCurriculum';
 import ManageSeries from './pages/Admin/ManageSeries';
 
 // Professor Pages
-import ProfessorDashboard from './pages/Professor/Dashboard';
+// Professor Pages
 import ProfessorMyBooks from './pages/Professor/MyBooks';
 import ProfessorStudents from './pages/Professor/Students';
 
 // Student Pages
-import StudentDashboard from './pages/Student/Dashboard';
 import StudentLibrary from './pages/Student/MyLibrary';
 
 function App() {
@@ -42,7 +41,7 @@ function App() {
             {/* Admin Routes */}
             <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
               <Route element={<MainLayout />}>
-                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin" element={<Navigate to="/admin/books" replace />} />
                 <Route path="/admin/books" element={<ManageBooks />} />
                 <Route path="/admin/users" element={<ManageUsers />} />
                 <Route path="/admin/curriculum" element={<ManageCurriculum />} />
@@ -54,7 +53,7 @@ function App() {
             {/* Professor Routes */}
             <Route element={<ProtectedRoute allowedRoles={['professor']} />}>
               <Route element={<MainLayout />}>
-                <Route path="/professor" element={<ProfessorDashboard />} />
+                <Route path="/professor" element={<Navigate to="/professor/my-books" replace />} />
                 <Route path="/professor/my-books" element={<ProfessorMyBooks />} />
                 <Route path="/professor/students" element={<ProfessorStudents />} />
               </Route>
@@ -63,7 +62,7 @@ function App() {
             {/* Student Routes */}
             <Route element={<ProtectedRoute allowedRoles={['student']} />}>
               <Route element={<MainLayout />}>
-                <Route path="/student" element={<StudentDashboard />} />
+                <Route path="/student" element={<Navigate to="/student/library" replace />} />
                 <Route path="/student/library" element={<StudentLibrary />} />
               </Route>
             </Route>
