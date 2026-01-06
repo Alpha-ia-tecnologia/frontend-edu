@@ -155,14 +155,80 @@ export default function ManageBooks() {
         setUploadError(null);
 
         try {
+            // 1. Send the PDF
             const result = await uploadApi.uploadPdf(pdfFile);
-            setFormData({ ...formData, pdfUrl: result.pdfUrl });
+            const pdfUrl = result.pdfUrl;
+
+            // 2. Generate thumbnail from the first page
+            try {
+                const coverUrl = await generateCoverFromPdf(pdfFile);
+                if (coverUrl) {
+                    setFormData(prev => ({
+                        ...prev,
+                        pdfUrl: pdfUrl || '',
+                        coverUrl: coverUrl
+                    }));
+                } else {
+                    setFormData(prev => ({ ...prev, pdfUrl: pdfUrl || '' }));
+                }
+            } catch (coverErr) {
+                console.error('Error auto-generating cover:', coverErr);
+                // Don't fail the whole process if cover fails, just set the PDF
+                setFormData(prev => ({ ...prev, pdfUrl: pdfUrl || '' }));
+            }
+
             setUploadSuccess(true);
             setPdfFile(null);
         } catch (err) {
             setUploadError(err instanceof Error ? err.message : 'Erro ao fazer upload');
         } finally {
             setIsUploading(false);
+        }
+    };
+
+    const generateCoverFromPdf = async (file: File): Promise<string | null> => {
+        try {
+            // Load PDF.js
+            const pdfjsLib = await import('pdfjs-dist');
+            // Worker is needed for performance and avoiding main thread blocking
+            pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+            // Get first page
+            const page = await pdf.getPage(1);
+
+            // Configure viewport (scale 1.5 for better quality)
+            const viewport = page.getViewport({ scale: 1.5 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            if (!context) return null;
+
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            // Render page to canvas
+            await page.render({
+                canvasContext: context,
+                viewport: viewport
+            }).promise;
+
+            // Convert to blob
+            const blob = await new Promise<Blob | null>(resolve =>
+                canvas.toBlob(resolve, 'image/jpeg', 0.8)
+            );
+
+            if (!blob) return null;
+
+            // Upload the generated image
+            const result = await uploadApi.uploadImage(blob);
+            return result.imageUrl || null;
+
+        } catch (err) {
+            console.error('Failed to generate PDF cover:', err);
+            return null;
         }
     };
 

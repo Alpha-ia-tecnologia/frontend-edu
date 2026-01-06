@@ -316,7 +316,8 @@ export interface UploadResponse {
     filename: string;
     originalName: string;
     size: number;
-    pdfUrl: string;
+    pdfUrl?: string;
+    imageUrl?: string;
 }
 
 export const uploadApi = {
@@ -336,6 +337,27 @@ export const uploadApi = {
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.error || 'Erro ao fazer upload do PDF');
+        }
+
+        return response.json();
+    },
+
+    async uploadImage(file: Blob | File): Promise<UploadResponse> {
+        const token = getToken();
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const response = await fetch(`${API_BASE_URL}/upload/image`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Erro ao fazer upload da imagem');
         }
 
         return response.json();
